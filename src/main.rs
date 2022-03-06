@@ -1,3 +1,5 @@
+mod player;
+
 use std::{
     collections::HashSet,
     env,
@@ -50,16 +52,11 @@ async fn hello(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
 #[command]
 #[aliases("member")]
 async fn channel_member(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
-    let option_guild = &ctx.cache.guild(msg.guild_id.unwrap()).await;
-    let mut entry_users: Vec<&str> = msg.content.split(" ").collect();
+    let mut entry_users: Vec<String> = msg.content.split(" ").map(|split_message| split_message.to_string()).collect();
     let users = entry_users.split_off(1);
-
-    if let Some(guild) = option_guild {
-        let channel_members: Vec<String> = guild.members.values().map(|member| member.display_name().to_string()).collect();
-        let players: Vec<String> = users.iter().filter(|user| channel_members.iter().any(|member_name| member_name.as_ref() == user.to_string())).map(|item| item.to_string()).collect();
-        for player in players {
-            println!("{} is a player.", player);
-        }
+    let game_players = player::get_player(users, ctx, msg).await;
+    for game_player in game_players {
+        println!("{} is a game player.", game_player);
     }
     msg.channel_id.say(&ctx.http, "see logs.").await?;
     Ok(())
