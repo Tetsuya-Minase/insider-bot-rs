@@ -1,4 +1,5 @@
 mod player;
+mod insider_game;
 
 use std::{
     collections::HashSet,
@@ -57,6 +58,10 @@ async fn channel_member(ctx: &Context, msg: &Message, _args: Args) -> CommandRes
     let game_players = player::get_player(users, ctx, msg).await;
     for game_player in game_players {
         println!("{} is a game player.", game_player);
+    }
+    let option_theme = insider_game::get_theme();
+    if let Some(theme) = option_theme {
+        println!("theme is {}!", theme);
     }
     msg.channel_id.say(&ctx.http, "see logs.").await?;
     Ok(())
