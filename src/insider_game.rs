@@ -1,5 +1,6 @@
 use rand::seq::SliceRandom;
 
+/// get theme
 pub fn get_theme() -> Option<String> {
     let mut theme_list = vec!["山", "学校", "算数", "ドラゴン", "テスト"];
     let mut rng = rand::thread_rng();
@@ -11,7 +12,7 @@ pub fn get_theme() -> Option<String> {
     None
 }
 
-/// play and role struct
+/// player and role struct
 pub struct PlayerRole {
     player_name: String,
     role: String
