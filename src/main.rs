@@ -63,6 +63,7 @@ async fn channel_member(ctx: &Context, msg: &Message, _args: Args) -> CommandRes
     if let Some(theme) = option_theme {
         println!("theme is {}!", theme);
     }
+    let _player_role_list = insider_game::hand_out_role(game_players);
     msg.channel_id.say(&ctx.http, "see logs.").await?;
     Ok(())
 }
