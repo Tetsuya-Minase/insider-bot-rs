@@ -39,19 +39,12 @@ impl EventHandler for Handler {
 #[group]
 #[summary = "General"]
 #[description = "General commands."]
-#[commands(hello, channel_member)]
+#[commands(play_insider_game)]
 struct General;
 
 #[command]
-#[description = "say hello."]
-async fn hello(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
-    msg.channel_id.say(&ctx.http, "hello").await?;
-    Ok(())
-}
-
-#[command]
-#[aliases("member")]
-async fn channel_member(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
+#[aliases("insider")]
+async fn play_insider_game(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
     let players = msg.mentions.to_vec();
     let option_theme = insider_game::get_theme();
     let theme = match option_theme {
