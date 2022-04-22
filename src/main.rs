@@ -10,7 +10,6 @@ use std::fmt::format;
 
 use serenity::{
     async_trait,
-    client::bridge::gateway::GatewayIntents,
     framework::standard::{
         Args,
         CommandGroup,
@@ -60,6 +59,10 @@ async fn channel_member(ctx: &Context, msg: &Message, _args: Args) -> CommandRes
     }
     let player_role_list = insider_game::hand_out_role(players);
     for player_role in player_role_list {
+        // match player_role.player_name.direct_message(&ctx, |m| m.content("Hello!")) {
+        //     Ok(_) => println!("OK"),
+        //     Err(_) => println!("Error")
+        // }
         msg.channel_id.say(&ctx.http, format!("Hello {}. Your role is {}.", player_role.player_name, player_role.role)).await?;
     }
     msg.channel_id.say(&ctx.http, "see logs.").await?;
@@ -83,7 +86,7 @@ async fn my_help(
 #[tokio::main]
 async fn main() {
     let token = env::var("DISCORD_TOKEN").expect("Expected a token in the environment");
-    let http = Http::new_with_token(&token);
+    let http = Http::new(&token);
     let (owners, bot_id) = match http.get_current_application_info().await {
         Ok(info) => {
             let mut owners = HashSet::new();
@@ -109,10 +112,9 @@ async fn main() {
         .help(&MY_HELP)
         .group(&GENERAL_GROUP);
     let mut client =
-        Client::builder(&token)
+        Client::builder(&token, GatewayIntents::GUILDS | GatewayIntents::GUILD_MESSAGES | GatewayIntents::GUILD_PRESENCES)
             .event_handler(Handler)
             .framework(framework)
-            .intents(GatewayIntents::GUILDS | GatewayIntents::GUILD_MESSAGES | GatewayIntents::GUILD_PRESENCES)
             .await.expect("Err creating client");
     if let Err(why) = client.start().await {
         println!("Client error: {:?}", why);
