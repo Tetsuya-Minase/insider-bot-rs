@@ -1,4 +1,3 @@
-mod player;
 mod insider_game;
 
 use std::{
@@ -7,6 +6,7 @@ use std::{
 };
 use std::any::Any;
 use std::borrow::Borrow;
+use std::fmt::format;
 
 use serenity::{
     async_trait,
@@ -53,17 +53,15 @@ async fn hello(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
 #[command]
 #[aliases("member")]
 async fn channel_member(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
-    let mut entry_users: Vec<String> = msg.content.split(" ").map(|split_message| split_message.to_string()).collect();
-    let users = entry_users.split_off(1);
-    let game_players = player::get_player(users, ctx, msg).await;
-    for game_player in game_players {
-        println!("{} is a game player.", game_player);
-    }
+    let players = msg.mentions.to_vec();
     let option_theme = insider_game::get_theme();
     if let Some(theme) = option_theme {
         println!("theme is {}!", theme);
     }
-    let _player_role_list = insider_game::hand_out_role(game_players);
+    let player_role_list = insider_game::hand_out_role(players);
+    for player_role in player_role_list {
+        msg.channel_id.say(&ctx.http, format!("Hello {}. Your role is {}.", player_role.player_name, player_role.role)).await?;
+    }
     msg.channel_id.say(&ctx.http, "see logs.").await?;
     Ok(())
 }
