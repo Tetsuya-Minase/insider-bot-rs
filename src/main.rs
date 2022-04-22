@@ -4,9 +4,6 @@ use std::{
     collections::HashSet,
     env,
 };
-use std::any::Any;
-use std::borrow::Borrow;
-use std::fmt::format;
 
 use serenity::{
     async_trait,
@@ -20,12 +17,9 @@ use serenity::{
     },
     http::Http,
     model::{channel::Message, gateway::Ready, id::UserId},
-    prelude::*,
-    utils::{content_safe, ContentSafeOptions},
+    prelude::*
 };
 use serenity::framework::StandardFramework;
-use serenity::futures::StreamExt;
-use serenity::model::guild::Member;
 
 struct Handler;
 
