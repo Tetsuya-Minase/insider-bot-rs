@@ -1,5 +1,4 @@
 use rand::seq::SliceRandom;
-use serenity::model::user::User;
 
 /// get theme
 pub fn get_theme() -> Option<String> {
@@ -15,14 +14,14 @@ pub fn get_theme() -> Option<String> {
 
 /// player and role struct
 pub struct PlayerRole {
-    pub player_name: User,
-    pub role: String
+    player_name: String,
+    role: String
 }
 
 /// hand out roles.
 /// # Arguments
 /// * `players` - player name list
-pub fn hand_out_role(players: Vec<User>) -> Vec<PlayerRole> {
+pub fn hand_out_role(players: Vec<String>) -> Vec<PlayerRole> {
     let mut roles = vec!["マスター", "インサイダー", "市民", "市民"];
     if players.len() > 4 {
         let append_player_count = players.len() - 1;
