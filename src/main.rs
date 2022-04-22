@@ -54,16 +54,18 @@ async fn hello(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
 async fn channel_member(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
     let players = msg.mentions.to_vec();
     let option_theme = insider_game::get_theme();
-    if let Some(theme) = option_theme {
-        println!("theme is {}!", theme);
-    }
+    let theme = match option_theme {
+        Some(theme) => theme,
+        None => return Ok(())
+    };
     let player_role_list = insider_game::hand_out_role(players);
     for player_role in player_role_list {
-        // match player_role.player_name.direct_message(&ctx, |m| m.content("Hello!")) {
-        //     Ok(_) => println!("OK"),
-        //     Err(_) => println!("Error")
-        // }
-        msg.channel_id.say(&ctx.http, format!("Hello {}. Your role is {}.", player_role.player_name, player_role.role)).await?;
+        let message = match &*player_role.role {
+            "マスター" | "インサイダー" => format!("Hello {}.\nYour role is {}.\nThe theme is {}.", player_role.player_name, player_role.role, theme),
+            "市民" => format!("Hello {}.\nYour role is {}.", player_role.player_name, player_role.role),
+            _ => "".to_string()
+        };
+        player_role.player_name.direct_message(&ctx, |m| m.content(message)).await?;
     }
     msg.channel_id.say(&ctx.http, "see logs.").await?;
     Ok(())
