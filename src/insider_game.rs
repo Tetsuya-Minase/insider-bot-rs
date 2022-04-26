@@ -15,7 +15,9 @@ pub fn get_theme() -> Option<String> {
 
 /// player and role struct
 pub struct PlayerRole {
+    /// player name
     pub player_name: User,
+    /// player role
     pub role: String
 }
 
