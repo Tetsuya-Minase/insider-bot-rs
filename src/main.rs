@@ -5,20 +5,14 @@ use std::{
     env,
 };
 
-use serenity::{
-    async_trait,
-    framework::standard::{
-        Args,
-        CommandGroup,
-        CommandResult,
-        help_commands,
-        HelpOptions,
-        macros::{command, group, help},
-    },
-    http::Http,
-    model::{channel::Message, gateway::Ready, id::UserId},
-    prelude::*
-};
+use serenity::{async_trait, framework::standard::{
+    Args,
+    CommandGroup,
+    CommandResult,
+    help_commands,
+    HelpOptions,
+    macros::{command, group, help},
+}, http::Http, model::{channel::Message, gateway::Ready, id::UserId}, prelude::*};
 use serenity::framework::StandardFramework;
 
 struct Handler;
@@ -52,9 +46,12 @@ async fn play_insider_game(ctx: &Context, msg: &Message, _args: Args) -> Command
             "市民" => format!("Hello {}.\nYour role is {}.", player_role.player_name, player_role.role),
             _ => "".to_string()
         };
-        player_role.player_name.direct_message(&ctx, |m| m.content(message)).await?;
+        let result = player_role.player_name.direct_message(&ctx, |m| m.content(message)).await;
+        if let Err(_result) = result {
+            msg.channel_id.say(&ctx.http, "Error!! see logs.").await?;
+        }
     }
-    msg.channel_id.say(&ctx.http, "see logs.").await?;
+    msg.channel_id.say(&ctx.http, "配ったよ").await?;
     Ok(())
 }
 
