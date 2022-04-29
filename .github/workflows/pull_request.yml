@@ -1,0 +1,24 @@
+name: insider-bot-rs pull request test
+
+on:
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  check_pull_request:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: check
+        run: cargo check
+      - name: test
+        run: DISCORD_TOKEN=${{secrets.DISCORD_TOKEN}} cargo test --verbose
+      - name: notice-failure
+        if: failure()
+        run: |
+          curl -XPOST -H "Content-Type: application/json" -XPOST -d "{\"content\": \"${{ secrets.DISCORD_MENTION }} PR ci jobs failure :umbrella:\",\"embeds\": [{\"title\": \"build detail\", \"color\": 14427686, \"fields\": [{\"name\": \"repository\",\"value\": \"$GITHUB_REPOSITORY\"}, {\"name\": \"action url\", \"value\": \"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID\"}]}]}" ${{ secrets.DISCORD_URL }}
+      - name: slack-notice-success
+        if: success()
+        run: |
+          curl -XPOST -H "Content-Type: application/json" -XPOST -d "{\"content\": \" PR ci jobs success :sunny:\",\"embeds\": [{\"title\": \"build detail\", \"color\": 1096065, \"fields\": [{\"name\": \"repository\",\"value\": \"$GITHUB_REPOSITORY\"}, {\"name\": \"action url\", \"value\": \"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID\"}]}]}" ${{ secrets.DISCORD_URL }}
