@@ -1,0 +1,44 @@
+name: insider-bot-rs push main
+
+on:
+  push:
+    branches:
+      - main
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REPOSITORY: ${{ secrets.GCP_REPOSITORY }}
+  REGION: ${{ secrets.GCP_REGION }}
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    steps:
+      - uses: actions/checkout@v3
+      - id: 'auth'
+        name: 'auth gcp'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}
+      - id: 'setup'
+        name: 'Setup Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v0'
+
+      - name: 'Authorize Docker push'
+        run: gcloud auth configure-docker
+
+      - name: build and push
+        run: |-
+          docker build -t ${{ env.REGION }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/insider-bot-rs:${{ github.sha }} --build-arg URL=${{secrets.DISCORD_TOKEN}} ./
+          docker push ${{ env.REGION }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/insider-bot-rs:${{ github.sha }}
+
+      - name: notice-failure
+        if: failure()
+        run: |
+          curl -XPOST -H "Content-Type: application/json" -XPOST -d "{\"content\": \"${{ secrets.DISCORD_MENTION }} deploy failure :umbrella:\",\"embeds\": [{\"title\": \"build detail\", \"color\": 14427686, \"fields\": [{\"name\": \"repository\",\"value\": \"$GITHUB_REPOSITORY\"}, {\"name\": \"action url\", \"value\": \"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID\"}]}]}" ${{ secrets.DISCORD_URL }}
+      - name: slack-notice-success
+        if: success()
+        run: |
+          curl -XPOST -H "Content-Type: application/json" -XPOST -d "{\"content\": \"deploy success :sunny:\",\"embeds\": [{\"title\": \"build detail\", \"color\": 1096065, \"fields\": [{\"name\": \"repository\",\"value\": \"$GITHUB_REPOSITORY\"}, {\"name\": \"action url\", \"value\": \"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID\"}, {\"name\": \"out put ull\", \"value\": \"${{ steps.deploy.outputs.url }}\"}]}]}" ${{ secrets.DISCORD_URL }}
