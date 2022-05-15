@@ -7,7 +7,8 @@ on:
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   REPOSITORY: ${{ secrets.GCP_REPOSITORY }}
-  REGION: ${{ secrets.GCP_REGION }}
+#  REGION: ${{ secrets.GCP_REGION }}
+  REGION: us-central1-docker.pkg.dev
 jobs:
   deploy:
     runs-on: ubuntu-latest
