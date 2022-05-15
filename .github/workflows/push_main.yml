@@ -7,8 +7,7 @@ on:
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   REPOSITORY: ${{ secrets.GCP_REPOSITORY }}
-#  REGION: ${{ secrets.GCP_REGION }}
-  REGION: us-central1-docker.pkg.dev
+  REGION: ${{ secrets.GCP_REGION }}
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -28,7 +27,7 @@ jobs:
         uses: 'google-github-actions/setup-gcloud@v0'
 
       - name: 'Authorize Docker push'
-        run: gcloud auth configure-docker us-central1-docker.pkg.dev
+        run: gcloud auth configure-docker ${{ env.REGION }}
 
       - name: build and push
         run: |-
