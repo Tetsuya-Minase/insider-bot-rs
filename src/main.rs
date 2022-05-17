@@ -51,7 +51,7 @@ async fn play_insider_game(ctx: &Context, msg: &Message, _args: Args) -> Command
             msg.channel_id.say(&ctx.http, "Error!! see logs.").await?;
         }
     }
-    msg.channel_id.say(&ctx.http, "配ったよ").await?;
+    msg.channel_id.say(&ctx.http, "done handing out role & theme.").await?;
     Ok(())
 }
 
