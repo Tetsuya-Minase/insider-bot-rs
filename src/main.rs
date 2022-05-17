@@ -36,14 +36,14 @@ async fn play_insider_game(ctx: &Context, msg: &Message, _args: Args) -> Command
     let players = msg.mentions.to_vec();
     if players.len() < 4 {
         msg.channel_id.say(&ctx.http, "At least 4 players are required.").await?;
-        Ok(())
+        return Ok(());
     }
     let option_theme = insider_game::get_theme();
     let theme = match option_theme {
         Some(theme) => theme,
         None => {
             msg.channel_id.say(&ctx.http, "Error!! cannot retrieve a theme.").await?;
-            Ok(())
+            return Ok(());
         }
     };
     let player_role_list = insider_game::hand_out_role(players);
