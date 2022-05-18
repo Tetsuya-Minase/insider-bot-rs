@@ -14,11 +14,47 @@ jobs:
         run: cargo check
       - name: test
         run: DISCORD_TOKEN=${{secrets.DISCORD_TOKEN}} cargo test --verbose
-      - name: notice-failure
-        if: failure()
+
+  commit_document:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      - name: output documents
+        run: sh ./scripts/output-docs.sh
+      - name: diff
+        id: diff
         run: |
+          git add -N .
+          git diff --name-only --exit-code
+        continue-on-error: true
+      - name: commit documents
+        if: steps.diff.outcome == 'failure'
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add .
+          git commit --author=. -m 'docs: update documents.'
+          git push
+
+  check_result:
+    runs-on: ubuntu-latest
+    needs: [check_pull_request, commit_document]
+    steps:
+      - run: echo "check result"
+
+  notice_failure:
+    runs-on: ubuntu-latest
+    needs: check_result
+    if: ${{ failure() }}
+    steps:
+      - run: |
           curl -XPOST -H "Content-Type: application/json" -XPOST -d "{\"content\": \"${{ secrets.DISCORD_MENTION }} PR ci jobs failure :umbrella:\",\"embeds\": [{\"title\": \"build detail\", \"color\": 14427686, \"fields\": [{\"name\": \"repository\",\"value\": \"$GITHUB_REPOSITORY\"}, {\"name\": \"action url\", \"value\": \"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID\"}]}]}" ${{ secrets.DISCORD_URL }}
-      - name: slack-notice-success
-        if: success()
-        run: |
+  notice_success:
+    runs-on: ubuntu-latest
+    needs: check_result
+    if: ${{ success() }}
+    steps:
+      - run: |
           curl -XPOST -H "Content-Type: application/json" -XPOST -d "{\"content\": \" PR ci jobs success :sunny:\",\"embeds\": [{\"title\": \"build detail\", \"color\": 1096065, \"fields\": [{\"name\": \"repository\",\"value\": \"$GITHUB_REPOSITORY\"}, {\"name\": \"action url\", \"value\": \"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID\"}]}]}" ${{ secrets.DISCORD_URL }}

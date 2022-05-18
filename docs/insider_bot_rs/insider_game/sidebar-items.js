@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["get_theme","get theme"],["hand_out_role","hand out roles."]],"struct":[["PlayerRole","player and role struct"]]});
