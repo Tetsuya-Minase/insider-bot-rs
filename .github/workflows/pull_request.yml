@@ -48,6 +48,8 @@ jobs:
   check_result:
     runs-on: ubuntu-latest
     needs: [check_pull_request, commit_document]
+    steps:
+      - run: echo "check result"
 
   notice_failure:
     runs-on: ubuntu-latest
