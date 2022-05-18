@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["insider_bot_rs"] = [{"text":"impl <a class=\"trait\" href=\"https://docs.rs/serenity/*/serenity/client/event_handler/trait.EventHandler.html\" title=\"trait serenity::client::event_handler::EventHandler\">EventHandler</a> for <a class=\"struct\" href=\"insider_bot_rs/struct.Handler.html\" title=\"struct insider_bot_rs::Handler\">Handler</a>","synthetic":false,"types":["insider_bot_rs::Handler"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
