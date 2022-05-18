@@ -38,6 +38,7 @@ jobs:
           git diff --name-only --exit-code
         continue-on-error: true
       - name: commit documents
+        if: steps.diff.outcome == 'failure'
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
