@@ -31,7 +31,7 @@ jobs:
 
       - name: build and push
         run: |-
-          docker build -t ${{ env.REGION }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/insider-bot-rs:${{ github.sha }} --build-arg URL=${{secrets.DISCORD_TOKEN}} ./
+          docker build -t ${{ env.REGION }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/insider-bot-rs:${{ github.sha }} --build-arg TOKEN=${{secrets.DISCORD_TOKEN}} ./
           docker push ${{ env.REGION }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/insider-bot-rs:${{ github.sha }}
 
       - name: notice-failure
