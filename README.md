@@ -12,7 +12,7 @@ TBD.
 
 # License
 
-TBD.
+MIT.
 
 # Author
 
